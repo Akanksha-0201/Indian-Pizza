@@ -1,0 +1,83 @@
+import 'package:flutter/material.dart';
+import 'package:myapp/Screens/cart.dart';
+
+class PizzaSearchDelegate extends SearchDelegate {
+  final List<Map<String, String>> pizzaList = [
+    {'name': 'Chicken Pizza', 'image': 'https://i.pinimg.com/236x/bb/58/04/bb580461b29d28e2dea9ef033c6f4c99.jpg'},
+    {'name': 'Veg Pizza', 'image': 'https://i.pinimg.com/236x/f9/e4/94/f9e494d4b4c7b764c677ff0efc660276.jpg'},
+    {'name': 'Curryleaf Pizza', 'image': 'https://i.pinimg.com/236x/75/bb/36/75bb36f4f0a70e2a1faac5fc524f5629.jpg'},
+    {'name': 'Cheese Pizza', 'image': 'https://i.pinimg.com/236x/69/2a/55/692a5556a19c2b11665d049db2f45923.jpg'},
+    {'name': 'Margherita Pizza', 'image': 'https://i.pinimg.com/236x/61/45/dc/6145dc53ce61c82b071dd735232056ca.jpg'},
+  ];
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final results = pizzaList
+        .where((pizza) => pizza['name']!.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          leading: Image.network(results[index]['image']!),
+          title: Text(results[index]['name']!),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Cart(
+                  pizzaName: results[index]['name']!,
+                  pizzaImage: results[index]['image']!,
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final suggestions = pizzaList
+        .where((pizza) => pizza['name']!.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    return ListView.builder(
+      itemCount: suggestions.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          leading: Image.network(suggestions[index]['image']!),
+          title: Text(suggestions[index]['name']!),
+          onTap: () {
+            query = suggestions[index]['name']!;
+            showResults(context);
+          },
+        );
+      },
+    );
+  }
+}
